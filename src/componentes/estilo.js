@@ -16,13 +16,20 @@ export default StyleSheet.create({
         fontSize: 10
     },
 
+    fontM: {
+        fontSize: 16
+    },
+
     txtInput: {
         borderColor: 'gray',
         borderWidth: 2,
         borderCurve: 'circular',
         borderRadius: 10,
-        padding: 5,
-        width: 200,
-        textAlign: 'center'
+        paddingVertical: 5,
+        paddingLeft: 15,
+        paddingRight: 40,
+        width: '100%',
+        height: 50,
+        textAlign: 'left'
     }
 })

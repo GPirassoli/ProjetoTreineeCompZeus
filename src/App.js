@@ -1,45 +1,36 @@
 import React from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import Login from './telas/Login'
+import Home from './telas/Home'
+import EsqueciSenha1 from './telas/EsqueciSenha1'
+import EsqueciSenha2 from './telas/EsqueciSenha2'
+import EsqueciSenha3 from './telas/EsqueciSenha3'
+import EsqueciSenha4 from './telas/EsqueciSenha4'
+import Membros from './telas/Membros'
+import Clientes from './telas/Clientes'
+import Equipamentos from './telas/Equipamentos'
+import Orcamento from './telas/Orcamento'
+import Penalidades from './telas/Penalidades'
 
-import ImagemZeus from './componentes/ImagemZeus'
-import Pedido from './componentes/Pedido'
-import ButtonConf from './componentes/ButtonConf'
-import estilo from './componentes/estilo'
-
+const Stack = createNativeStackNavigator()
 
 export default props => {
     return (
-        <View style={{ flex: 1, gap: 50, backgroundColor: 'white' }}>
-            <ImagemZeus />
-            <View style={styles.mainGap}>
-                <View style={styles.main}>
-                    <Text style={estilo.fontG}>Bem Vindo(a) ao</Text>
-                    <Text style={estilo.fontGG}>ZEUS</Text>
-                </View>
-                <View style={styles.main}>
-                    <Pedido pedido='email'/>
-                    <Pedido pedido='senha'/>
-                    <Text style={[estilo.fontPP, { color: '#036aca' }]}>Esqueceu a senha?</Text>
-                </View>
-                <ButtonConf/>
-            </View>
-        </View>
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="EsqueciSenha1" component={EsqueciSenha1} />
+                <Stack.Screen name="EsqueciSenha2" component={EsqueciSenha2} />
+                <Stack.Screen name="EsqueciSenha3" component={EsqueciSenha3} />
+                <Stack.Screen name="EsqueciSenha4" component={EsqueciSenha4} />
+                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="Membros" component={Membros} />
+                <Stack.Screen name="Clientes" component={Clientes} />
+                <Stack.Screen name="Equipamentos" component={Equipamentos} />
+                <Stack.Screen name="Orcamento" component={Orcamento} />
+                <Stack.Screen name="Penalidades" component={Penalidades} />
+            </Stack.Navigator>
+        </NavigationContainer>
     )
 }
-
-const styles = StyleSheet.create({
-    mainGap: {
-        flex: 1,
-        justifyContent: 'space-around',
-        paddingBottom: 200,
-        gap: 20,
-        alignItems: 'center',
-        backgroundColor: 'white',
-    },
-
-    main: {
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        gap: 10
-    },
-})
