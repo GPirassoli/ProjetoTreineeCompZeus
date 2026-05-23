@@ -1,166 +1,183 @@
-import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, StyleSheet } from 'react-native'
+import React, { useState, useContext } from 'react'
+import { View, Text, TouchableOpacity, Image, FlatList, Alert, useWindowDimensions } from 'react-native'
 import estilo from '../componentes/estilo'
 import ButtonConf from '../componentes/ButtonConf'
+import { MembrosContext } from '../contextos/MembrosContext'
+import BarraSuperior from '../componentes/BarraSuperior'
+import MenuLateral from '../componentes/MenuLateral'
 
 export default ({ navigation }) => {
 
     const [mostrarMenu, setmostrarMenu] = useState(false)
     const [menuPerfil, setmenuPerfil] = useState(false)
+    const [expandirFiltro, setExpandirFiltro] = useState(false)
+    const [mostrarGP, setMostrarGP] = useState(false)
+    const [mostrarMarketing, setMostrarMarketing] = useState(false)
+    const [mostrarVendas, setMostrarVendas] = useState(false)
+    const [mostrarProjetos, setMostrarProjetos] = useState(false)
+    const [mostrarPresidencia, setMostrarPresidencia] = useState(false)
+    const [mostrarDiretoria, setMostrarDiretoria] = useState(false)
+    const [mostrarGerencia, setMostrarGerencia] = useState(false)
+
+    // Identifica se é tablet baseado na largura da tela (padrão 768px)
+    const { width } = useWindowDimensions()
+    const isTablet = width >= 768
+
+    // Puxa as variáveis e funções diretamente do Contexto global
+    const { membros, adicionarMembro, excluirMembro } = useContext(MembrosContext)
+
+    // Calcula quais filtros estão ativos e filtra os membros
+    const areasAtivas = []
+    if (mostrarGP) areasAtivas.push('GP')
+    if (mostrarMarketing) areasAtivas.push('Marketing')
+    if (mostrarVendas) areasAtivas.push('Vendas')
+    if (mostrarProjetos) areasAtivas.push('Projetos')
+    if (mostrarPresidencia) areasAtivas.push('Presidencia')
+    if (mostrarDiretoria) areasAtivas.push('Diretoria')
+    if (mostrarGerencia) areasAtivas.push('Gerência')
+
+    const membrosFiltrados = areasAtivas.length > 0 
+        ? membros.filter(membro => areasAtivas.includes(membro.area))
+        : membros
 
     return (
-        <View style={{ flex: 1, gap: 50, backgroundColor: 'white', paddingTop: '10%'}}>
-            <View style={{backgroundColor: 'white', borderBottomWidth: 1,
-            borderBottomColor: 'gray', height: '7%', justifyContent: 'center'}}>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: 5, width: '100%'}}>
+        <View style={{ flex: 1, gap: 50, backgroundColor: 'white', marginTop: isTablet? '3%' : '10%'}}>
+            <BarraSuperior mostrarMenu={mostrarMenu} setmostrarMenu={setmostrarMenu} menuPerfil={menuPerfil} setmenuPerfil={setmenuPerfil} />
+            <View style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', paddingTop: 10}}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '80%', alignItems: 'flex-start', marginBottom: 20 }}>
                     <TouchableOpacity 
-                    style={{paddingLeft: 15 }}
-                    onPress={() => setmostrarMenu(!mostrarMenu)}
+                        style={{backgroundColor: '#001529', borderRadius: 10, padding: 10, justifyContent: 'center' }}
+                        onPress={() => navigation.navigate('AdicionarMembro')}
                     >
-                        <Image 
-                            source={require('../assets/menu_tres_tracos.png')}
-                            style={{ width: 24, height: 24, tintColor: '#001529' }}
-                        />
+                        <Text style={[estilo.fontM, { color: 'white' }]}>+ Adicionar</Text>
                     </TouchableOpacity>
-                    <Image 
-                        source={require('../assets/escrito_zeus.png')}
-                        style={{width: 90, height: 90, tintColor: '#001529'}}
-                    />
-                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 10}}>
-                        <TouchableOpacity style={{ width: 24, height: 24, backgroundColor: '#F5F7FA', borderRadius: 12,
-                        justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{backgroundColor: '#F5F7FA', borderColor: 'gray', borderWidth: 2, borderCurve: 'circular', borderRadius: 10, padding: 5}}>
+                        <TouchableOpacity //Filtro
+                            style={{ justifyContent: 'center', paddingHorizontal: 10}}
+                        onPress={() => setExpandirFiltro(!expandirFiltro)}
+                    >
+                        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10}}>
+                            <Text style={estilo.fontM}>Filtrar</Text>
                             <Image 
-                                source={require('../assets/notification.png')}
-                                style={{ width: 15, height: 15, tintColor: '#001529' }}
+                                source={require('../assets/open.png')}
+                                style={{ width: 15, height: 15, tintColor: '#001529', transform: [{ rotate: expandirFiltro ? '90deg' : '0deg' }]}}
                             />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ width: 24, height: 24, backgroundColor: '#F5F7FA', borderRadius: 12,
-                        justifyContent: 'center', alignItems: 'center' }}>
-                            <Image 
-                                source={require('../assets/setting.png')}
-                                style={{ width: 15, height: 15, tintColor: '#001529' }}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                        style={{paddingRight: 15 }}
-                        onPress={() => setmenuPerfil(!menuPerfil)}
-                        >
-                            <Image 
-                                source={require('../assets/user.png')}
-                                style={{ width: 24, height: 24, tintColor: '#001529'}}
-                            />
-                        </TouchableOpacity>
+                        </View>
+                        {expandirFiltro && (
+                            <View style={{ paddingLeft: 5, borderTopWidth: 1, borderTopColor: '#e0e0e0', gap: 5 }}>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarGP(!mostrarGP)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarGP && { fontWeight: 'bold', color: '#036aca' }]}>GP</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarMarketing(!mostrarMarketing)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarMarketing && { fontWeight: 'bold', color: '#036aca' }]}>Marketing</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarVendas(!mostrarVendas)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarVendas && { fontWeight: 'bold', color: '#036aca' }]}>Vendas</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarProjetos(!mostrarProjetos)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarProjetos && { fontWeight: 'bold', color: '#036aca' }]}>Projetos</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarPresidencia(!mostrarPresidencia)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarPresidencia && { fontWeight: 'bold', color: '#036aca' }]}>Presidência</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarDiretoria(!mostrarDiretoria)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarDiretoria && { fontWeight: 'bold', color: '#036aca' }]}>Diretoria</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setMostrarGerencia(!mostrarGerencia)}
+                                >
+                                    <Text style={[estilo.fontM, mostrarGerencia && { fontWeight: 'bold', color: '#036aca' }]}>Gerência</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </TouchableOpacity>
                     </View>
                 </View>
-            </View>
-            <View style={{ flex: 1, justifyContent: 'space-evenly', backgroundColor: 'white', alignItems: 'center'}}>
-                <View style={{width: '80%'}}>
-                    <ButtonConf titulo='membros' onPress={() => navigation.navigate('Login')} />
-                </View>
+
+                <FlatList
+                    data={membrosFiltrados}
+                    keyExtractor={(item, index) => item.id || index.toString()}
+                    key={isTablet ? 'tablet' : 'phone'} // Necessário para trocar numColumns dinamicamente sem erro
+                    numColumns={isTablet ? 2 : 1} // 2 colunas para tablet, 1 para celular
+                    contentContainerStyle={{ gap: 20, paddingBottom: 20, alignItems: isTablet ? 'center' : 'center' }}
+                    columnWrapperStyle={isTablet ? { justifyContent: 'space-between', width: '100%', paddingHorizontal: '5%' } : null}
+                    style={{ width: '100%' }}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <View style={{ width: isTablet ? '45%' : '80%', borderCurve: 'circular', borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#F5F7FA', gap: 20 }}>
+                            <Text style={[estilo.fontG, {backgroundColor: '#001529', color: 'white', textDecorationColor: 'bold', borderRadius: 10, borderCurve: 'circular'}]}>{item.area}</Text>
+                            <Image
+                                source={item.foto}
+                                style={{width: 100, height: 100, alignSelf: 'center'}}
+                            />
+                            <Text style={[estilo.fontM, {alignSelf: 'center'}]}>{item.nome}</Text>
+                            <Text style={[estilo.fontPP, {alignSelf: 'center'}]}>{item.email}</Text>
+                            <View style={{flexDirection: 'row', gap: 10, justifyContent: 'center'}}>
+                                <TouchableOpacity
+                                    style={{backgroundColor: '#001529', borderRadius: 5, borderCurve: 'circular', paddingHorizontal: 10, paddingVertical: 5}}
+                                    onPress={() => Alert.alert('E-mail', item.email)}
+                                >
+                                    <Image
+                                        source={require('../assets/email.png')}
+                                        style={{width: 24, height: 24, tintColor: 'white'}}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={{backgroundColor: '#001529', borderRadius: 5, borderCurve: 'circular', paddingHorizontal: 10, paddingVertical: 5}}
+                                    onPress={() => Alert.alert('Telefone', item.telefone)}
+                                >
+                                    <Image
+                                        source={require('../assets/telefone.png')}
+                                        style={{width: 24, height: 24, tintColor: 'white'}}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={{backgroundColor: '#001529', borderRadius: 5, borderCurve: 'circular', paddingHorizontal: 10, paddingVertical: 5}}
+                                    onPress={() => navigation.navigate('DadosMembro', { membroId: item.id })}
+                                >
+                                    <Image
+                                        source={require('../assets/menu_tres_tracos.png')}
+                                        style={{width: 24, height: 24, tintColor: 'white'}}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={{backgroundColor: 'red', borderRadius: 5, borderCurve: 'circular', paddingHorizontal: 15, paddingVertical: 5, justifyContent: 'center'}}
+                                    onPress={() => {
+                                        Alert.alert(
+                                            'Confirmar Exclusão',
+                                            'Tem certeza que deseja excluir este membro?',
+                                            [
+                                                { text: 'Cancelar', style: 'cancel' },
+                                                {
+                                                    text: 'Excluir',
+                                                    style: 'destructive',
+                                                    onPress: () => excluirMembro(item.id)
+                                                }
+                                            ]
+                                        )
+                                    }}
+                                >
+                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>X</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                />
             </View>
 
-            {/* Modal do Menu Lateral */}
-            <Modal visible={mostrarMenu} transparent={true} animationType="fade">
-                <View style={styles.overlay}>
-                    {/* Fundo escuro semitransparente que fecha o menu ao ser clicado */}
-                    <TouchableWithoutFeedback onPress={() => setmostrarMenu(false)}>
-                        <View style={styles.background} />
-                    </TouchableWithoutFeedback>
-                    
-                    {/* Conteúdo do Menu */}
-                    <View style={styles.menu}>
-                        <Image
-                            source={require('../assets/escrito_zeus.png')}
-                            style={{width: 180, height: 180, tintColor: '#001529'}}
-                        />
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
-                            <Image 
-                                source={require('../assets/home.png')}
-                                style={{width: 25, height: 25, tintColor: '#001529'}}
-                            />
-                            <Text style={estilo.fontM}>Início</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => setmostrarMenu(false)}>
-                            <Image 
-                                source={require('../assets/membros.png')}
-                                style={{width: 25, height: 25, tintColor: '#001529'}}
-                            />
-                            <Text style={estilo.fontM}>Membros</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Clientes')}>
-                            <Image 
-                                source={require('../assets/cliente.png')}
-                                style={{width: 25, height: 25, tintColor: '#001529'}}
-                            />
-                            <Text style={estilo.fontM}>Clientes</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Equipamentos')}>
-                            <Image 
-                                source={require('../assets/equipamento.png')}
-                                style={{width: 25, height: 25, tintColor: '#001529'}}
-                            />
-                            <Text style={estilo.fontM}>Equipamentos</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Orcamento')}>
-                            <Image 
-                                source={require('../assets/orcamento.png')}
-                                style={{width: 25, height: 25, tintColor: '#001529'}}
-                            />
-                            <Text style={estilo.fontM}>Orçamento</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Penalidades')}>
-                            <Image 
-                                source={require('../assets/penalidades.png')}
-                                style={{width: 25, height: 25, tintColor: '#001529'}}
-                            />
-                            <Text style={estilo.fontM}>Penalidades</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Login')}>
-                            <Text style={[estilo.fontM, { color: 'red'}]}>Sair</Text>
-                        </TouchableOpacity>
-                        <View>
-                            <Image
-                                source={require('../assets/logo_comp.png')}
-                                style={{ width: 100, height: 80, alignSelf: 'center'}}
-                            />
-                            <Text style={[estilo.fontM, {alignSelf: 'center', color: '#001529'}]}>CompJr</Text>
-                            <Text style={[estilo.fontPP, {alignSelf: 'center'}]}>Sistema ERP</Text>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
+            <MenuLateral mostrarMenu={mostrarMenu} setmostrarMenu={setmostrarMenu} navigation={navigation} />
         </View>
     )
 }
-
-export const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    background: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    menu: {
-        width: '80%',
-        backgroundColor: 'white',
-        height: '100%',
-        paddingTop: '15%',
-        paddingHorizontal: 20,
-        gap: 15,
-        // Sombras para dar destaque ao menu
-        shadowColor: '#000',
-        shadowOffset: { width: 2, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        elevation: 10,
-    },
-    menuItem: {
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-        flexDirection: 'row',
-        gap: 10,
-    }
-})

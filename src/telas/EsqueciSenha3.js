@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, Button, StyleSheet, Alert } from 'react-native'
+import { View, Text, Button, StyleSheet, Alert, useWindowDimensions } from 'react-native'
 import estilo from '../componentes/estilo'
 
 import Pedido from '../componentes/Pedido'
@@ -21,10 +21,15 @@ export default ({ navigation }) => {
         }
     }
     
+    const { width, height } = useWindowDimensions()
+    const isTablet = width >= 768 && width > height
+
     return (
-        <View style={{ flex: 1, gap: 50, backgroundColor: 'white', paddingTop: '10%'}}>
-                    <ImagemZeus />
-                    <View style={styles.mainGap}>
+        <View style={{ flex: 1, flexDirection: isTablet ? 'row' : 'column', gap: isTablet ? 0 : 50, backgroundColor: 'white', paddingTop: isTablet ? '0%' : '10%'}}>
+                    <View style={{flex: 1, justifyContent: 'flex-start'}}>
+                        <ImagemZeus />
+                    </View>
+                    <View style={[styles.mainGap, isTablet && { flex: 1, justifyContent: 'center', gap: 25}]}>
                         <View style={styles.main}>
                             <Text style={estilo.fontGG}>Escolha nova senha</Text>
                             <Text style={[estilo.fontM, {width: '60%', textAlign: 'center'}]}>
@@ -34,8 +39,8 @@ export default ({ navigation }) => {
                             <Pedido pedido='confirmar senha' onChangeText={setConfirmarSenha} />
                         </View>
                         <View style={{ gap: 10, width: '80%', justifyContent: 'space-between'}}>
-                            <ButtonConf titulo='Voltar' onPress={() => navigation.navigate('EsqueciSenha2')} />
                             <ButtonConf titulo='Avançar' onPress={avancar} />
+                            <ButtonConf titulo='Voltar' onPress={() => navigation.navigate('EsqueciSenha2')} />
                         </View>
                     </View>
                 </View>

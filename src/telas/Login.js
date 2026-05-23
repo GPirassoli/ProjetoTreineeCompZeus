@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, Image, Alert, useWindowDimensions } from 'react-native'
 import Pedido from '../componentes/Pedido'
 import ImagemZeus from '../componentes/ImagemZeus'
 import ButtonConf from '../componentes/ButtonConf'
@@ -11,8 +11,11 @@ export default ({ navigation }) => {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
 
+    const { width, height } = useWindowDimensions()
+    const isTablet = width >= 768 && width > height
+
     const entrar = () => {
-        if (email === 'membro123@gmail.com' && senha === 'senha123') { //login e senha genericos apenas para testes
+        if (email === 'membro@compjunior.com.br' && senha === 'senha123') { //login e senha genericos apenas para testes
             navigation.navigate('Home')
         } else {
             Alert.alert('Erro no Login', 'E-mail ou senha incorretos. Tente novamente!')
@@ -20,31 +23,34 @@ export default ({ navigation }) => {
     }
 
     return (
-        <View style={{ flex: 1, gap: 50, backgroundColor: 'white', paddingTop: '0%'}}>
-            <ImagemZeus />
-            <View style={styles.mainGap}>
+        <View style={{ flex: 1, flexDirection: isTablet ? 'row' : 'column', gap: 50, backgroundColor: 'white', paddingTop: isTablet ? '0%' : '10%'}}>
+            <View style={{flex: 1, justifyContent: 'flex-start'}}>
+                <ImagemZeus />
+            </View>
+            <View style={[styles.mainGap, isTablet && { flex: 1, justifyContent: 'center' }]}>
                 <View style={styles.main}>
                     <Text style={estilo.fontG}>Bem Vindo(a) ao</Text>
                     <Text style={estilo.fontGG}>ZEUS</Text>
                     <Pedido pedido='email' onChangeText={setEmail} />
                     <Pedido pedido='senha' onChangeText={setSenha} />
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', width: '80%', gap: 5}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '80%'}}>
+                        <View style={{flexDirection: 'row', gap: 5}}>
+                            <TouchableOpacity
+                                onPress={() => setPress(!press)}
+                            >
+                                <Image 
+                                source={ 
+                                    press
+                                        ? require('../assets/press.png')
+                                        : require('../assets/not_press.png')
+                                } 
+                                style={{ width: 16, height: 16, tintColor: 'gray' }}
+                                />
+                            </TouchableOpacity>
+                            <Text style={estilo.fontPP}>Lembrar minha senha</Text>
+                        </View>
                         <TouchableOpacity
-                            onPress={() => setPress(!press)}
-                        >
-                            <Image 
-                            source={ 
-                                press
-                                    ? require('../assets/press.png')
-                                    : require('../assets/not_press.png')
-                            } 
-                            style={{ width: 16, height: 16, tintColor: 'gray' }}
-                            />
-                        </TouchableOpacity>
-                        <Text style={estilo.fontPP}>Lembrar minha senha</Text>
-
-                        <TouchableOpacity
-                            style={{ alignItems: 'flex-end', width: '60%'}}
+                            style={{ alignItems: 'flex-end', paddingLeft: '10%'}}
                             onPress={() => navigation.navigate('EsqueciSenha1')}
                         >
                             <Text style={[estilo.fontPP, { color: '#036aca' }]}>Esqueceu a senha?</Text>
