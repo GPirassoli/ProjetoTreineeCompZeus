@@ -15,6 +15,7 @@ O ZEUS funciona como um sistema ERP mobile simplificado, permitindo a administra
 - **React Native:** Escolhido por permitir a criação de aplicativos nativos para iOS e Android usando uma base de código única, acelerando o desenvolvimento e facilitando a manutenção da equipe.
 - **Context API:** Optamos por utilizar a Context API nativa do React em vez de bibliotecas externas (como Redux ou Zustand) devido à leveza e simplicidade. Como a aplicação lida com fluxos de CRUD (Create, Read, Update, Delete) independentes (clientes, membros, etc.), o Contexto fornece o isolamento e o compartilhamento de estado perfeito sem adicionar complexidade desnecessária.
 - **Layout Responsivo:** Utilização nativa do hook `useWindowDimensions` para criar condicionalmente um layout que se adapta automaticamente, entregando uma excelente experiência tanto em smartphones quanto em tablets.
+- **Emails Pré-Determinados:** Optamos por utilizar um sistema em que a pessoa receberia o perfil dela pela administração, indispensando assim de um sistema para criação de contas. Com os e-mails válidos sendo colocados diretamente no sistema.
 
 ## 📂 Estrutura do Projeto
 
